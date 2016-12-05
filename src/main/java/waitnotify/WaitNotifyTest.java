@@ -14,7 +14,7 @@ public class WaitNotifyTest {
     MyRun pc = new MyRun("C", b, c);
 
     new Thread(pa).start();
-    Thread.sleep(100);  //确保按顺序A、B、C执行
+    Thread.sleep(200);  //确保按顺序A、B、C执行
     new Thread(pb).start();
     Thread.sleep(100);
     new Thread(pc).start();
