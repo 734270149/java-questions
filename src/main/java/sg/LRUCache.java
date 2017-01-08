@@ -5,57 +5,58 @@ import java.util.HashMap;
 /**
  * Created by shiguang3 on 2016/7/8.
  */
-public class LRUCache {
-    int l_capacity;
-    HashMap<Integer, CacheEntry> l_HashMapmap;
-    CacheEntry head, tail;
+public class LRUCache<K, V> {
+    private int capacity;
+    private HashMap<K, CacheEntry<K, V>> map;
+    private CacheEntry<K, V> head, tail;
 
-    // use two way linklist
     public LRUCache(int capacity) {
-        l_capacity = capacity;
-        l_HashMapmap = new HashMap<Integer, CacheEntry>(capacity);
-        head = new CacheEntry(-1, -1);
-        tail = new CacheEntry(1, 1);
+        this.capacity = capacity;
+        map = new HashMap<K, CacheEntry<K, V>>((int) (capacity / .75f) + 1);
+        head = new CacheEntry<K, V>(null, null);
+        tail = new CacheEntry<K, V>(null, null);
         head.next = tail;
         tail.pre = head;
     }
 
-    public int get(int key) {//if contains key, just get value and update
-        if (l_HashMapmap.containsKey(key)) {
-            CacheEntry cEntry = l_HashMapmap.get(key);
-            MoveToHead(cEntry);
+    public V get(K key) {
+        if (map.containsKey(key)) {
+            CacheEntry<K, V> cEntry = map.get(key);
+            moveToHead(cEntry);
             return cEntry.value;
-        } else return -1;
-    }
-
-    public void set(int key, int value) {
-        if (l_HashMapmap.containsKey(key)) {//if map contains key, just update value
-            CacheEntry cEntry = l_HashMapmap.get(key);
-            cEntry.value = value;
-            MoveToHead(cEntry);
-        } else if (l_HashMapmap.size() < l_capacity) {//not contain & smaller the size
-            CacheEntry cEntry = new CacheEntry(key, value);
-            MoveToHead(cEntry);
-            l_HashMapmap.put(key, cEntry);
-        } else {//not contain key and over the size
-            CacheEntry cEntry = new CacheEntry(key, value);
-            MoveToHead(cEntry);
-            l_HashMapmap.put(key, cEntry);
-            int endIndex = removeEnd();
-            l_HashMapmap.remove(endIndex);
+        } else {
+            return null;
         }
     }
 
-    private int removeEnd() {
-        CacheEntry cEntry = tail.pre;
+    public V put(K key, V value) {
+        if (map.containsKey(key)) {
+            CacheEntry<K, V> cEntry = map.get(key);
+            V old = cEntry.value;
+            cEntry.value = value;
+            moveToHead(cEntry);
+            return old;
+        } else {
+            CacheEntry<K, V> cEntry = new CacheEntry<K, V>(key, value);
+            moveToHead(cEntry);
+            map.put(key, cEntry);
+            if (map.size() == capacity) {
+                removeEnd();
+            }
+            return null;
+        }
+    }
+
+    private void removeEnd() {
+        CacheEntry<K, V> cEntry = tail.pre;
         tail.pre.pre.next = tail;
         tail.pre = cEntry.pre;
         cEntry.pre = null;
         cEntry.next = null;
-        return cEntry.key;
+        map.remove(cEntry.key);
     }
 
-    private void MoveToHead(CacheEntry cEntry) {
+    private void moveToHead(CacheEntry<K, V> cEntry) {
         if (cEntry.next != null && cEntry.pre != null) {
             cEntry.pre.next = cEntry.next;
             cEntry.next.pre = cEntry.pre;
@@ -66,13 +67,13 @@ public class LRUCache {
         head.next = cEntry;
     }
 
-    class CacheEntry {
-        int key;
-        int value;
-        CacheEntry pre;
-        CacheEntry next;
+    private static final class CacheEntry<K, V> {
+        K key;
+        V value;
+        CacheEntry<K, V> pre;
+        CacheEntry<K, V> next;
 
-        public CacheEntry(int k, int v) {
+        public CacheEntry(K k, V v) {
             this.key = k;
             this.value = v;
         }
