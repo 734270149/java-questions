@@ -1,5 +1,7 @@
 package sg;
 
+import redis.clients.jedis.Jedis;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -20,8 +22,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import redis.clients.jedis.Jedis;
-
 public class Main {
 
   public static void main(String[] args) {
@@ -29,6 +29,7 @@ public class Main {
     System.out.println(Integer.toBinaryString(Integer.MIN_VALUE));
     System.out.println(Integer.MIN_VALUE == Math.abs(Integer.MIN_VALUE));
     System.out.println(Integer.MIN_VALUE < 0);
+    listIterator();
 //        jedis();
 //        String[] split = "商家编号,商家名称,库房,业务日期,出入库类型,计费动作,单据编号,单据类型,销售平台单据号,商品代码,商品名称,数量,实收金额,数据状态,业务类型,商品销售属性,首件价格,首件数,续件价格,商家折扣".split(",");
 //        System.out.println(split.length);
@@ -40,9 +41,16 @@ public class Main {
     objects.add(1);
     objects.add(2);
     objects.add(3);
-    ListIterator<Integer> iterator = objects.listIterator();
-    iterator.next();
-    iterator.previous();
+    ListIterator<Integer> iterator = objects.listIterator(0);
+    System.out.println(iterator.nextIndex());
+    System.out.println(iterator.previousIndex());
+    System.out.println(iterator.next());
+    iterator.add(31);
+    System.out.println(iterator.nextIndex());
+    System.out.println(iterator.previousIndex());
+    System.out.println(iterator.previous());
+    System.out.println(iterator.nextIndex());
+    System.out.println(iterator.previousIndex());
     iterator.set(5);
     System.out.println(objects);
   }
@@ -217,7 +225,7 @@ public class Main {
   }
 
   public static HashMap<String, ArrayList<String>> getString(
-      Map<Integer, ArrayList<String>> param) {
+          Map<Integer, ArrayList<String>> param) {
     ArrayList<ArrayList<String>> all = new ArrayList<ArrayList<String>>();
     StringBuilder keyBuilder = new StringBuilder(param.size() << 2);
     for (Map.Entry<Integer, ArrayList<String>> entry : param.entrySet()) {

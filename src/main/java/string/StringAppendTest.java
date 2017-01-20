@@ -1,5 +1,6 @@
 package string;
 
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -8,6 +9,21 @@ import java.util.Properties;
 public class StringAppendTest {
 
   public static void main(String[] args) throws Exception {
+    String s1 = "abc";
+    String s2 = "abc";
+    //Per the Java Language Specification, compile-time constant strings are automatically interned, making the call to String.intern() redundant.
+    String s3 = "abc".intern();
+    String s4 = "abcd".substring(0, 3);
+    String s5 = "abcd".substring(0, 3).intern();
+    System.out.println(s1 == s2);
+    System.out.println(s2 == s3);
+    System.out.println(s3 == s4);
+    System.out.println(s4 == s5);
+    System.out.println(s3 == s5);
+//    append();
+  }
+
+  private static void append() throws IOException {
     Properties properties = new Properties();
     properties.load(StringAppendTest.class.getClassLoader().getResourceAsStream("config.properties"));
     String a = properties.getProperty("string");

@@ -73,7 +73,7 @@ public class LRUCache<K, V> {
         CacheEntry<K, V> pre;
         CacheEntry<K, V> next;
 
-        public CacheEntry(K k, V v) {
+        private CacheEntry(K k, V v) {
             this.key = k;
             this.value = v;
         }
